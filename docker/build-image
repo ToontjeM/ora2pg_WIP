@@ -1,0 +1,14 @@
+#!/bin/sh
+
+source env.sh
+
+if [ $# -ne 1 ]; then
+	echo "usage: $(basename "$0") <EDB token>"
+	exit 1
+fi
+
+docker ps -q --filter "name=orademo" | grep -q . && docker stop orademo && docker rm -fv orademo
+docker ps -q --filter "name=pgdemo" | grep -q . && docker stop pgdemo && docker rm -fv pgdemo
+#docker ps -q --filter "name=lcdemo" | grep -q . && docker stop lcdemo && docker rm -fv lcdemo
+docker build -t $IMAGE_ORA -f Dockerfile.oracle .
+docker build --build-arg EDBTOKEN="$1" -t $IMAGE_PG -f Dockerfile.edb . 
